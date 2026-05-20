@@ -31,6 +31,7 @@ public final class AppConfig {
                 throw new IllegalStateException("MongoDB Atlas URI is not configured. Set the MONGODB_URI environment variable.");
             }
 
+            uri = withDefaultTimeouts(uri);
             mongoClient = MongoClients.create(new ConnectionString(uri));
             datastore = Morphia.createDatastore(mongoClient, database);
             datastore.getMapper().map(Product.class);
@@ -49,6 +50,25 @@ public final class AppConfig {
             value = PROPERTIES.getProperty(key);
         }
         return resolveDefault(value);
+    }
+
+    private static String withDefaultTimeouts(String uri) {
+        String updatedUri = uri;
+        if (!updatedUri.contains("serverSelectionTimeoutMS=")) {
+            updatedUri = appendQueryParameter(updatedUri, "serverSelectionTimeoutMS=5000");
+        }
+        if (!updatedUri.contains("connectTimeoutMS=")) {
+            updatedUri = appendQueryParameter(updatedUri, "connectTimeoutMS=10000");
+        }
+        return updatedUri;
+    }
+
+    private static String appendQueryParameter(String uri, String parameter) {
+        String separator = uri.contains("?") ? "&" : "?";
+        if (uri.endsWith("?") || uri.endsWith("&")) {
+            separator = "";
+        }
+        return uri + separator + parameter;
     }
 
     private static String toEnvName(String key) {
