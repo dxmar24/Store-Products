@@ -5,7 +5,6 @@ import com.example.storeproducts.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-@WebServlet(name = "ProductApiController", urlPatterns = "/api/products/*")
 public class ProductApiController extends HttpServlet {
     private final ObjectMapper mapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())

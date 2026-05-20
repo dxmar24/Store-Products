@@ -5,6 +5,27 @@
          version="5.0">
     <display-name>Store Products</display-name>
 
+    <servlet>
+        <servlet-name>HomeController</servlet-name>
+        <servlet-class>com.example.storeproducts.controller.HomeController</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ProductApiController</servlet-name>
+        <servlet-class>com.example.storeproducts.controller.ProductApiController</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>HomeController</servlet-name>
+        <url-pattern>/app</url-pattern>
+        <url-pattern>/table</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ProductApiController</servlet-name>
+        <url-pattern>/api/products/*</url-pattern>
+    </servlet-mapping>
+
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
