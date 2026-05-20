@@ -78,6 +78,18 @@ createApp({
             this.form = emptyForm();
             this.editingId = null;
         },
+        productTotal(product) {
+            return Number(product.price || 0) * Number(product.stock || 0);
+        },
+        formatCurrency(value) {
+            return '$' + Number(value || 0).toFixed(2);
+        },
+        formatDate(value) {
+            if (!value) {
+                return '-';
+            }
+            return new Date(value).toLocaleDateString();
+        },
         async handleResponse(response, onSuccess) {
             if (response.ok) {
                 const data = response.status === 204 ? null : await response.json();

@@ -47,9 +47,23 @@
 }
 
 .data-table th {
-    color: var(--muted);
+    background: #3f51b5;
+    color: #ffffff;
     font-size: 0.78rem;
     text-transform: uppercase;
+}
+
+.data-table th:first-child {
+    border-top-left-radius: 6px;
+}
+
+.data-table th:last-child {
+    border-top-right-radius: 6px;
+}
+
+.total-cell {
+    color: #1f3694;
+    font-weight: 800;
 }
 
 .data-table tbody tr:hover {

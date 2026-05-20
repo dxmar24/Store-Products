@@ -48,7 +48,7 @@
                         <input v-model.number="form.price" type="number" min="0" step="0.01" required>
                     </label>
                     <label>
-                        Stock
+                        Quantity
                         <input v-model.number="form.stock" type="number" min="0" step="1" required>
                     </label>
                 </div>
@@ -77,8 +77,9 @@
                         <p>{{ product.category }}</p>
                     </div>
                     <div class="metrics">
-                        <strong v-text="'$' + Number(product.price).toFixed(2)"></strong>
-                        <span>{{ product.stock }} in stock</span>
+                        <strong>{{ formatCurrency(productTotal(product)) }}</strong>
+                        <span>{{ product.stock }} quantity</span>
+                        <span>{{ formatDate(product.createdAt) }}</span>
                         <span :class="product.active ? 'status active' : 'status'">
                             {{ product.active ? 'Active' : 'Inactive' }}
                         </span>

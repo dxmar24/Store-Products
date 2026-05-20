@@ -48,7 +48,7 @@
                         <input v-model.number="form.price" type="number" min="0" step="0.01" required>
                     </label>
                     <label>
-                        Stock
+                        Quantity
                         <input v-model.number="form.stock" type="number" min="0" step="1" required>
                     </label>
                 </div>
@@ -72,12 +72,12 @@
                         <thead>
                         <tr>
                             <th>SKU</th>
-                            <th>Name</th>
+                            <th>Product name</th>
                             <th>Category</th>
-                            <th>Price</th>
-                            <th>Stock</th>
-                            <th>Status</th>
-                            <th>Created</th>
+                            <th>Base price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Registration date</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -88,13 +88,9 @@
                             <td>{{ product.sku }}</td>
                             <td>{{ product.name }}</td>
                             <td>{{ product.category }}</td>
-                            <td v-text="'$' + Number(product.price).toFixed(2)"></td>
+                            <td>{{ formatCurrency(product.price) }}</td>
                             <td>{{ product.stock }}</td>
-                            <td>
-                                <span :class="product.active ? 'status active' : 'status'">
-                                    {{ product.active ? 'Active' : 'Inactive' }}
-                                </span>
-                            </td>
+                            <td class="total-cell">{{ formatCurrency(productTotal(product)) }}</td>
                             <td>{{ formatDate(product.createdAt) }}</td>
                         </tr>
                         </tbody>
