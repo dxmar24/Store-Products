@@ -29,6 +29,15 @@ public class ProductRepository {
                 .first());
     }
 
+    public Optional<Product> findBySku(String sku) {
+        if (sku == null || sku.isBlank()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(datastore.find(Product.class)
+                .filter(Filters.eq("sku", sku))
+                .first());
+    }
+
     public Product save(Product product) {
         datastore.save(product);
         return product;

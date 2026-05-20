@@ -32,24 +32,24 @@
                 <h2>{{ editingId ? 'Edit product' : 'Create product' }}</h2>
                 <label>
                     SKU
-                    <input v-model.trim="form.sku" placeholder="SKU-1001" required>
+                    <input v-model.trim="form.sku" placeholder="SKU-1001" maxlength="30" pattern="[A-Za-z0-9-]+" title="Use letters, numbers, and hyphens only." required>
                 </label>
                 <label>
                     Name
-                    <input v-model.trim="form.name" placeholder="Wireless keyboard" required>
+                    <input v-model.trim="form.name" placeholder="Wireless keyboard" maxlength="80" required>
                 </label>
                 <label>
                     Category
-                    <input v-model.trim="form.category" placeholder="Accessories" required>
+                    <input v-model.trim="form.category" placeholder="Accessories" maxlength="50" required>
                 </label>
                 <div class="fields">
                     <label>
                         Price
-                        <input v-model.number="form.price" type="number" min="0" step="0.01" required>
+                        <input v-model.number="form.price" type="number" min="0.01" max="999999" step="0.01" required>
                     </label>
                     <label>
                         Quantity
-                        <input v-model.number="form.stock" type="number" min="0" step="1" required>
+                        <input v-model.number="form.stock" type="number" min="1" max="999999" step="1" required>
                     </label>
                 </div>
                 <label class="toggle">
