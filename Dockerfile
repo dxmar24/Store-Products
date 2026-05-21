@@ -1,7 +1,7 @@
 FROM php:8.3-cli-bookworm
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends $PHPIZE_DEPS ca-certificates curl git libssl-dev pkg-config unzip \
+    && apt-get install -y --no-install-recommends $PHPIZE_DEPS ca-certificates curl git libssl-dev libzstd-dev pkg-config unzip \
     && update-ca-certificates \
     && curl -fsSL https://pecl.php.net/get/mongodb-2.3.2.tgz -o /tmp/mongodb.tgz \
     && pecl install /tmp/mongodb.tgz \
