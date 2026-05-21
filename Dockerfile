@@ -1,17 +1,22 @@
-FROM maven:3.9.9-eclipse-temurin-17 AS build
-WORKDIR /app
+FROM php:8.3-cli-alpine
 
-COPY pom.xml .
+RUN apk add --no-cache $PHPIZE_DEPS curl git openssl-dev unzip \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
+    && curl -sS https://getcomposer.org/installer -o composer-setup.php \
+    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+    && rm composer-setup.php
+
+WORKDIR /var/www/html
+
+COPY composer.json ./
+RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts
+
 COPY src ./src
+COPY public ./public
 
-RUN mvn clean package -DskipTests
-
-FROM tomcat:10.1-jdk17-temurin
-
-RUN rm -rf /usr/local/tomcat/webapps/*
-
-COPY --from=build /app/target/store-products /usr/local/tomcat/webapps/ROOT
+RUN composer dump-autoload --no-dev --optimize
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "sed -i \"s/port=\\\"8080\\\"/port=\\\"${PORT:-8080}\\\"/\" /usr/local/tomcat/conf/server.xml && catalina.sh run"]
+CMD ["sh", "-c", "php -S 0.0.0.0:${PORT:-8080} -t public public/index.php"]

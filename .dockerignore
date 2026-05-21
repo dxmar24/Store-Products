@@ -1,5 +1,8 @@
-target/
 .env
 .git/
 .idea/
 *.iml
+vendor/
+node_modules/
+target/
+*.log

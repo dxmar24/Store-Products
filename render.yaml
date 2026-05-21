@@ -4,6 +4,7 @@ services:
     env: docker
     plan: free
     autoDeploy: true
+    healthCheckPath: /api/health
     envVars:
       - key: MONGODB_DATABASE
         value: store_products_db

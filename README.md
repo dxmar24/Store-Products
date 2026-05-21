@@ -1,18 +1,19 @@
 # Store Products
 
-Java web application built with JSP, Vue 3, MVC servlets, and MongoDB Atlas through the Morphia ODM.
+PHP 8.3 inventory app connected to MongoDB Atlas. It includes a browser interface, JSON API, server-side validation, client-side validation, and a Docker setup ready for Render.
 
-## Architecture
+## Stack
 
-- Model: `Product` entity mapped to MongoDB with Morphia.
-- View: JSP page with a Vue 3 inventory interface.
-- Controller: Jakarta Servlet controllers for the page and JSON API.
-- Service: product validation and business rules.
-- Repository: MongoDB Atlas persistence through Morphia.
+- PHP 8.3
+- Composer
+- MongoDB PHP extension
+- Official `mongodb/mongodb` PHP library
+- MongoDB Atlas
+- Vanilla JavaScript, HTML, and CSS
 
-## MongoDB Atlas Configuration
+## Environment
 
-Copy the example file:
+Create `.env` from the example:
 
 ```powershell
 Copy-Item .env.example .env
@@ -25,16 +26,11 @@ MONGODB_URI=mongodb+srv://USER:PASSWORD@CLUSTER.mongodb.net/?retryWrites=true&w=
 MONGODB_DATABASE=store_products_db
 ```
 
-Environment variables also work. If both exist, environment variables take priority.
+Environment variables take priority over `.env`.
 
 ## Run Locally
 
-```powershell
-mvn clean package
-mvn jetty:run
-```
-
-Or use:
+Docker is the local runtime for this project. The image installs PHP, Composer, and the MongoDB PHP extension:
 
 ```powershell
 .\run.ps1
@@ -43,52 +39,26 @@ Or use:
 Open:
 
 ```text
-http://localhost:8080/store-products
+http://localhost:8080
 ```
 
 ## API
 
-- `GET /store-products/api/products`
-- `POST /store-products/api/products`
-- `PUT /store-products/api/products/{id}`
-- `DELETE /store-products/api/products/{id}`
+- `GET /api/health`
+- `GET /api/products`
+- `POST /api/products`
+- `PUT /api/products/{id}`
+- `DELETE /api/products/{id}`
+
+Product fields:
+
+- `sku`: required, uppercase letters, numbers, and hyphens, max 30 chars
+- `name`: required, max 80 chars
+- `category`: required, max 50 chars
+- `price`: required, greater than 0, max 999999
+- `stock`: required integer, greater than 0, max 999999
+- `active`: boolean
 
 ## Deploy To Render
 
-This project includes:
-
-- `Dockerfile`: builds the WAR and runs it with Tomcat.
-- `render.yaml`: Render Blueprint configuration.
-- `.dockerignore`: keeps `.env` and build files out of the Docker image.
-
-Steps:
-
-1. Push the project to GitHub.
-2. In Render, create a new Blueprint or Web Service from the repository.
-3. Choose Docker as the environment if Render asks.
-4. Add the environment variables in Render. Use the same private MongoDB URI that is stored locally in `.env`; do not commit `.env` to GitHub.
-
-```text
-MONGODB_DATABASE=store_products_db
-MONGODB_URI=mongodb://USER:PASSWORD@HOST-1:27017,HOST-2:27017,HOST-3:27017/?ssl=true&replicaSet=REPLICA_SET&authSource=admin&retryWrites=true&w=majority
-```
-
-5. Deploy.
-
-Important for MongoDB Atlas:
-
-- In Atlas, go to Network Access and allow Render to connect.
-- For a class demo, you can allow `0.0.0.0/0`.
-- For a real production app, restrict access to trusted IPs only.
-
-On Render the application opens at the root URL:
-
-```text
-https://YOUR-RENDER-SERVICE.onrender.com/
-```
-
-The table view is:
-
-```text
-https://YOUR-RENDER-SERVICE.onrender.com/table
-```
+The included `Dockerfile` and `render.yaml` are ready for Render. Add `MONGODB_URI` as a private environment variable in Render before deploying.

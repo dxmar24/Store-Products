@@ -1,0 +1,19 @@
+{
+  "name": "store-products/php-app",
+  "description": "PHP product inventory application connected to MongoDB Atlas.",
+  "type": "project",
+  "require": {
+    "php": "^8.2",
+    "ext-mongodb": "*",
+    "mongodb/mongodb": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "StoreProducts\\": "src/"
+    }
+  },
+  "config": {
+    "allow-plugins": {},
+    "sort-packages": true
+  }
+}
