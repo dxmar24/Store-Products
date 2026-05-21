@@ -1,11 +1,16 @@
-FROM php:8.3-cli-alpine
+FROM php:8.3-cli-bookworm
 
-RUN apk add --no-cache $PHPIZE_DEPS curl git openssl-dev unzip \
-    && pecl install mongodb \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends $PHPIZE_DEPS ca-certificates curl git libssl-dev pkg-config unzip \
+    && update-ca-certificates \
+    && curl -fsSL https://pecl.php.net/get/mongodb-2.3.2.tgz -o /tmp/mongodb.tgz \
+    && pecl install /tmp/mongodb.tgz \
     && docker-php-ext-enable mongodb \
     && curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
-    && rm composer-setup.php
+    && rm composer-setup.php \
+    && apt-get purge -y --auto-remove $PHPIZE_DEPS \
+    && rm -rf /var/lib/apt/lists/* /tmp/pear /tmp/mongodb.tgz
 
 WORKDIR /var/www/html
 
