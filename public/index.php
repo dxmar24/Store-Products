@@ -2,12 +2,18 @@
 
 declare(strict_types=1);
 
+$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$staticFile = __DIR__ . $path;
+
+if (PHP_SAPI === 'cli-server' && is_file($staticFile)) {
+    return false;
+}
+
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use StoreProducts\ProductController;
 use StoreProducts\Response;
 
-$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 $segments = array_values(array_filter(explode('/', trim($path, '/'))));
 
