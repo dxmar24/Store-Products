@@ -2,6 +2,7 @@ const apiUrl = '/api/products';
 
 const state = {
     products: [],
+    selectedId: null,
     editingId: null,
     loading: false
 };
@@ -24,7 +25,23 @@ const elements = {
     submitButton: document.querySelector('#submitButton'),
     formTitle: document.querySelector('#formTitle'),
     modeBadge: document.querySelector('#modeBadge'),
-    countBadge: document.querySelector('#countBadge')
+    countBadge: document.querySelector('#countBadge'),
+    summaryProducts: document.querySelector('#summaryProducts'),
+    summaryUnits: document.querySelector('#summaryUnits'),
+    summaryValue: document.querySelector('#summaryValue'),
+    detailsStatus: document.querySelector('#detailsStatus'),
+    detailEmpty: document.querySelector('#detailEmpty'),
+    detailContent: document.querySelector('#detailContent'),
+    detailSku: document.querySelector('#detailSku'),
+    detailName: document.querySelector('#detailName'),
+    detailCategory: document.querySelector('#detailCategory'),
+    detailPrice: document.querySelector('#detailPrice'),
+    detailStock: document.querySelector('#detailStock'),
+    detailTotal: document.querySelector('#detailTotal'),
+    detailCreated: document.querySelector('#detailCreated'),
+    detailUpdated: document.querySelector('#detailUpdated'),
+    detailEditButton: document.querySelector('#detailEditButton'),
+    detailClearButton: document.querySelector('#detailClearButton')
 };
 
 const fieldRules = {
@@ -73,6 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.refreshButton.addEventListener('click', loadProducts);
     elements.newButton.addEventListener('click', resetForm);
     elements.clearButton.addEventListener('click', resetForm);
+    elements.detailEditButton.addEventListener('click', editSelectedProduct);
+    elements.detailClearButton.addEventListener('click', clearSelection);
 
     for (const input of [elements.sku, elements.name, elements.category, elements.price, elements.stock]) {
         input.addEventListener('input', () => validateField(input.name));
@@ -89,6 +108,9 @@ async function loadProducts() {
     try {
         const payload = await request(apiUrl);
         state.products = payload.data || [];
+        if (state.selectedId && !state.products.some(product => product.id === state.selectedId)) {
+            state.selectedId = null;
+        }
         renderProducts();
     } catch (error) {
         showNotice(error.message || 'Unable to load products.', 'error');
@@ -146,13 +168,38 @@ async function deleteProduct(product) {
         if (state.editingId === product.id) {
             resetForm();
         }
+        if (state.selectedId === product.id) {
+            state.selectedId = null;
+        }
         await loadProducts();
     } catch (error) {
         showNotice(error.message || 'Unable to delete product.', 'error');
     }
 }
 
+function selectProduct(product) {
+    state.selectedId = product.id;
+    renderProducts();
+}
+
+function clearSelection() {
+    state.selectedId = null;
+    renderProducts();
+}
+
+function selectedProduct() {
+    return state.products.find(product => product.id === state.selectedId) || null;
+}
+
+function editSelectedProduct() {
+    const product = selectedProduct();
+    if (product) {
+        editProduct(product);
+    }
+}
+
 function editProduct(product) {
+    state.selectedId = product.id;
     state.editingId = product.id;
     elements.productId.value = product.id;
     elements.sku.value = product.sku;
@@ -165,6 +212,7 @@ function editProduct(product) {
     elements.modeBadge.textContent = 'Editing';
     elements.submitButton.textContent = 'Update';
     clearFieldErrors();
+    renderProducts();
     elements.sku.focus();
 }
 
@@ -248,11 +296,15 @@ function clearFieldErrors() {
 
 function renderLoading() {
     elements.rows.innerHTML = '<tr><td class="empty-cell" colspan="9">Loading products...</td></tr>';
+    renderSummary();
+    renderDetails();
 }
 
 function renderProducts() {
     elements.rows.textContent = '';
     elements.countBadge.textContent = `${state.products.length} ${state.products.length === 1 ? 'product' : 'products'}`;
+    renderSummary();
+    renderDetails();
 
     if (state.products.length === 0) {
         elements.rows.innerHTML = '<tr><td class="empty-cell" colspan="9">No products found.</td></tr>';
@@ -261,6 +313,7 @@ function renderProducts() {
 
     for (const product of state.products) {
         const row = elements.rowTemplate.content.firstElementChild.cloneNode(true);
+        row.classList.toggle('selected-row', product.id === state.selectedId);
         setCell(row, 'sku', product.sku);
         setCell(row, 'name', product.name);
         setCell(row, 'category', product.category);
@@ -273,10 +326,56 @@ function renderProducts() {
         status.textContent = product.active ? 'Active' : 'Inactive';
         status.classList.toggle('active', product.active);
 
-        row.querySelector('[data-action="edit"]').addEventListener('click', () => editProduct(product));
-        row.querySelector('[data-action="delete"]').addEventListener('click', () => deleteProduct(product));
+        row.addEventListener('click', () => selectProduct(product));
+        row.querySelector('[data-action="view"]').addEventListener('click', event => {
+            event.stopPropagation();
+            selectProduct(product);
+        });
+        row.querySelector('[data-action="edit"]').addEventListener('click', event => {
+            event.stopPropagation();
+            editProduct(product);
+        });
+        row.querySelector('[data-action="delete"]').addEventListener('click', event => {
+            event.stopPropagation();
+            deleteProduct(product);
+        });
         elements.rows.appendChild(row);
     }
+}
+
+function renderSummary() {
+    const totalUnits = state.products.reduce((sum, product) => sum + Number(product.stock || 0), 0);
+    const inventoryValue = state.products.reduce((sum, product) => sum + productTotal(product), 0);
+
+    elements.summaryProducts.textContent = state.products.length;
+    elements.summaryUnits.textContent = totalUnits;
+    elements.summaryValue.textContent = formatCurrency(inventoryValue);
+}
+
+function renderDetails() {
+    const product = selectedProduct();
+    if (!product) {
+        elements.detailsStatus.textContent = 'No selection';
+        elements.detailEmpty.hidden = false;
+        elements.detailContent.hidden = true;
+        return;
+    }
+
+    elements.detailsStatus.textContent = product.active ? 'Active' : 'Inactive';
+    elements.detailSku.textContent = product.sku;
+    elements.detailName.textContent = product.name;
+    elements.detailCategory.textContent = product.category;
+    elements.detailPrice.textContent = formatCurrency(product.price);
+    elements.detailStock.textContent = product.stock;
+    elements.detailTotal.textContent = formatCurrency(productTotal(product));
+    elements.detailCreated.textContent = formatDate(product.createdAt);
+    elements.detailUpdated.textContent = formatDate(product.updatedAt);
+    elements.detailEmpty.hidden = true;
+    elements.detailContent.hidden = false;
+}
+
+function productTotal(product) {
+    return Number(product.price || 0) * Number(product.stock || 0);
 }
 
 function setCell(row, name, value) {

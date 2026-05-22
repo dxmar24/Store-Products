@@ -21,6 +21,21 @@
 
     <section class="notice" id="notice" hidden></section>
 
+    <section class="summary-grid" aria-label="Inventory summary">
+        <article class="summary-card">
+            <span>Products</span>
+            <strong id="summaryProducts">0</strong>
+        </article>
+        <article class="summary-card">
+            <span>Total units</span>
+            <strong id="summaryUnits">0</strong>
+        </article>
+        <article class="summary-card highlight">
+            <span>Inventory total</span>
+            <strong id="summaryValue">$0.00</strong>
+        </article>
+    </section>
+
     <section class="layout">
         <form class="panel editor" id="productForm" novalidate>
             <div class="section-title">
@@ -74,34 +89,79 @@
             </div>
         </form>
 
-        <section class="panel inventory">
-            <div class="section-title">
-                <h2>Inventory</h2>
-                <span id="countBadge">0 products</span>
-            </div>
+        <section class="content-stack">
+            <section class="panel details-panel" id="detailsPanel">
+                <div class="section-title">
+                    <h2>Product details</h2>
+                    <span id="detailsStatus">No selection</span>
+                </div>
+                <div class="detail-empty" id="detailEmpty">
+                    Select a product from the inventory table.
+                </div>
+                <div class="detail-content" id="detailContent" hidden>
+                    <div>
+                        <p class="eyebrow" id="detailSku"></p>
+                        <h3 id="detailName"></h3>
+                        <p id="detailCategory"></p>
+                    </div>
+                    <dl class="detail-grid">
+                        <div>
+                            <dt>Base price</dt>
+                            <dd id="detailPrice"></dd>
+                        </div>
+                        <div>
+                            <dt>Quantity</dt>
+                            <dd id="detailStock"></dd>
+                        </div>
+                        <div>
+                            <dt>Total value</dt>
+                            <dd id="detailTotal"></dd>
+                        </div>
+                        <div>
+                            <dt>Created</dt>
+                            <dd id="detailCreated"></dd>
+                        </div>
+                        <div>
+                            <dt>Updated</dt>
+                            <dd id="detailUpdated"></dd>
+                        </div>
+                    </dl>
+                    <div class="actions">
+                        <button class="secondary" id="detailEditButton" type="button">Edit selected</button>
+                        <button class="secondary" id="detailClearButton" type="button">Clear selection</button>
+                    </div>
+                </div>
+            </section>
 
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>SKU</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Qty</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Created</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody id="productRows">
-                    <tr>
-                        <td class="empty-cell" colspan="9">Loading products...</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+            <section class="panel inventory">
+                <div class="section-title">
+                    <h2>Inventory</h2>
+                    <span id="countBadge">0 products</span>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody id="productRows">
+                        <tr>
+                            <td class="empty-cell" colspan="9">Loading products...</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </section>
     </section>
 </main>
@@ -118,6 +178,7 @@
         <td data-cell="createdAt"></td>
         <td>
             <div class="row-actions">
+                <button class="secondary small" type="button" data-action="view">View</button>
                 <button class="secondary small" type="button" data-action="edit">Edit</button>
                 <button class="danger small" type="button" data-action="delete">Delete</button>
             </div>
